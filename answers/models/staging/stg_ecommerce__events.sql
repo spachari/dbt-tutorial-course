@@ -34,7 +34,6 @@ SELECT
 	{# Look in macros/macro_get_brand_name.sql to see how this function is defined #}
 	{{ target.schema }}.get_brand_name(uri) AS brand_name
 
-
 FROM source
 
 {# Only runs this filter on an incremental run #}

@@ -1,0 +1,59 @@
+version: 2
+
+models:
+  - name: stg_ecommerce__products
+    description: "table of products on online store"
+    columns:
+      - name: product_id
+        description: ""
+        tests:
+          - primary_key:
+              severity: error
+
+      - name: cost
+        description: "How much the product cost for the business to purchase"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: retail_price
+        description: "How much the product retails in the online store"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+          - dbt_utils.expression_is_true:
+              name: retail_price_greater_than_cost
+              expression: ">= cost"
+
+
+      - name: department
+        description: "Whether the item is menswear or womenswear "
+        tests:
+          - accepted_values:
+              values:
+                - "Men"
+                - "Women"
+              # Quote defaults to true, but this shows how we could set it to false if you 
+              # wanted to have non-string values (e.g. numbers or a TRUE/FALSE column)
+              quote: true
+              severity: error
+
+      - name: brand
+
+    latest_version: 2
+    versions:
+      - v: 1
+        columns:
+          - include: all
+            exclude: [brand]
+
+      - v: 2
+        columns:
+          - include: all
+        config:
+          alias: stg_ecommerce__products
+
+
+

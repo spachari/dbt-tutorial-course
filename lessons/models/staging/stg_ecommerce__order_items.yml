@@ -1,0 +1,78 @@
+version: 2
+
+models:
+  - name: stg_ecommerce__order_items
+    description: "Line items from orders"
+    config:
+      contract:
+        enforced: true
+    columns:
+      - name: order_item_id
+        # will be enforced before the model is created
+        data_type: INTEGER
+        constraints:
+          - type: not_null
+        description: ""
+        # will be checked after the model is run
+        tests:
+          - primary_key:
+              severity: error
+
+      - name: order_id
+        # will be enforced before the model is created
+        data_type: INTEGER
+        constraints:
+          - type: not_null
+        description: ""
+        # will be checked after the model is run
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_ecommerce__orders')
+              field: order_id
+
+      - name: user_id
+        # will be enforced before the model is created
+        data_type: STRING
+        constraints:
+          - type: not_null
+        description: ""
+        # will be checked after the model is run
+        tests:
+          - not_null
+
+      - name: product_id
+        # will be enforced before the model is created
+        data_type: INTEGER
+        constraints:
+          - type: not_null
+        description: ""
+        # will be checked after the model is run
+        tests:
+          - not_null
+        description: ""
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_ecommerce__products')
+              field: product_id
+
+      - name: inventory_item_id
+        # will be enforced before the model is created
+        data_type: INTEGER
+        constraints:
+          - type: not_null
+        description: ""
+
+      - name: item_sale_price
+        # will be enforced before the model is created
+        data_type: FLOAT64
+        description: ""
+        # will be checked after the model is run
+        tests:
+          - not_null
+        description: "How much the item sold for"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
